@@ -27,8 +27,8 @@ Now visit [http://localhost:8080](http://localhost:8080)
 
 You can deploy easily the app on Heroku by pushing the code to your heroku git repository.
 
-Before this, you will need to create 2 environment variables :
-- `NPM_CONFIG_PRODUCTION = false` : It will tell heroku to install `devDependencies` (and not only `dependencies`), required to build browserify's `bundle.min.js` file
+Before this, you will need to create 3 environment variables :
+- `NPM_CONFIG_PRODUCTION = false` : It will tell heroku to install `devDependencies` (and not only `dependencies`), required to build browserify's `bundle.js` file
 - `GMAP_API_KEY = <PUT YOUR KEY HERE>` : A Google Maps API v3 allowed for your heroku domain (see https://console.developers.google.com)
 - Optionally, `DB_CONNECTION_URL = postgres://<username>:<password>@<hostname>:<port>/<dbname>` if you want to persist locations
   into a postgresql db (instead of a sqlite db which will be deleted after every heroku shutdown)
