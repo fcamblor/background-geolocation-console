@@ -52,8 +52,18 @@ app.post('/locations', function (req, res) {
   //res.status(427).send("Too many requests");
   //res.status(500).send("Internal Server Error");
   //res.status(404).send("Not Found");
-
 });
+
+app.delete('/locations', function(req, res) {
+    console.log('---------------------------------------------------------------------');
+    console.log("- DELETE /locations", JSON.stringify(req.query));
+    Location.deleteLocations(req.query, function() {
+        res.send({ success: true });
+    }, function(err) {
+        res.status(500).send({ error: 'Something failed!' });
+    });
+});
+
 
 app.post('/configure', function(req, res) {
   console.log('/configure');
@@ -185,6 +195,22 @@ var Location = (function() {
           created_at: now
         });
       });
+    },
+    deleteLocations: function(params, success, error) {
+        var whereConditions = {};
+        if(params && params.deviceId) {
+            whereConditions.device_id = params.deviceId;
+        }
+        if(params && params.start_date && params.end_date) {
+            whereConditions.recorded_at = { $between: [params.start_date, params.end_date] };
+        }
+
+        if(!Object.keys(whereConditions).length) {
+            error("Missing some location deletion constraints");
+            return;
+        }
+
+        LocationModel.destroy({ where: whereConditions }).then(success, error);
     }
   }
 })();
