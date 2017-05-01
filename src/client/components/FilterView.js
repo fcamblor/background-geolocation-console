@@ -10,6 +10,7 @@ import {
   AppBar,
   Button,
   IconButton,
+  Input,
   DatePicker,
   TimePicker,
   Checkbox,
@@ -32,6 +33,9 @@ class FilterView extends Component {
       startDate: state.startDate,
       endDate: state.endDate,
       deviceId: state.deviceId,
+      vehicle: state.vehicle,
+      carrierId: state.carrierId,
+      loadNumber: state.loadNumber,
       showMarkers: state.showMarkers,
       showPolyline: state.showPolyline,
       showGeofenceHits: state.showGeofenceHits
@@ -103,6 +107,9 @@ class FilterView extends Component {
                     onChange={this.onChange.bind(this, 'endDate')}
                     value={this.state.endDate} />
                 </div>
+                <Input type='text' label='Carrier ID' name='carrierId' value={this.state.carrierId} onChange={this.onChange.bind(this, 'carrierId')} maxLength={20} />
+                <Input type='text' label='Vehicle' name='vehicle' value={this.state.vehicle} onChange={this.onChange.bind(this, 'vehicle')} maxLength={20} />
+                <Input type='text' label='Load #' name='loadNumber' value={this.state.loadNumber} onChange={this.onChange.bind(this, 'loadNumber')} maxLength={20} />
                 <Button icon="refresh" label="reload" style={{width:'100%'}} raised primary onMouseUp={this.onClickReload.bind(this)}/>
     
               </div>

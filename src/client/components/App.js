@@ -13,6 +13,9 @@ const SETTINGS = [
   {name: 'startDate', dataType: 'datetime'},
   {name: 'endDate', dataType: 'datetime'},
   {name: 'deviceId', dateType: 'string'},
+  {name: 'vehicle', dateType: 'string'},
+  {name: 'carrierId', dateType: 'string'},
+  {name: 'loadNumber', dateType: 'string'},
   {name: 'showMarkers', dataType: 'boolean', defaultValue: true},
   {name: 'showPolyline', dataType: 'boolean', defaultValue: true},
   {name: 'showGeofenceHits', dataType: 'boolean', defaultValue: true}
@@ -61,6 +64,9 @@ export default class App {
       case 'deviceId':
       case 'startDate':
       case 'endDate':
+      case 'vehicle':
+      case 'carrierId':
+      case 'loadNumber':
         this.setLocation(null);
         if (this.state.deviceId) {
           store.dispatch(getLocations(this.state));
@@ -121,6 +127,9 @@ export default class App {
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),
       deviceId: '',
+      vehicle: '',
+      carrierId: '',
+      loadNumber: '',
       showMarkers: true,
       showPolyline: true,
       showGeofenceHits: true
