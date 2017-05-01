@@ -12,6 +12,61 @@ var Location = (function() {
         return record;
     }
 
+    function flatten(arrayOfArrays) {
+        var results = [];
+
+        arrayOfArrays.forEach(function(arrayVal) {
+            if((typeof arrayVal) == "string") {
+                results.push(arrayVal);
+            } else if(arrayVal && arrayVal.length) {
+                Array.prototype.push.apply(results, arrayVal);
+            } else {
+                results.push(arrayVal);
+            }
+        });
+
+        return results;
+    }
+
+    function pluck(array, key) {
+        return array.map(function(entry) {
+            return entry[key];
+        });
+    }
+
+    function extractValuesFromPath(node, path) {
+        var pathChunks = path.split(".");
+        var currentNode = [ node ];
+        pathChunks.forEach(function(pathChunk) {
+            currentNode = flatten(pluck(currentNode, pathChunk));
+        });
+        return currentNode;
+    }
+
+    // extraConditions should be an array like [ "extraFieldName=extraFieldValue", "extraFieldName=extraFieldValue" ]
+    var $containsRegex = /\$contains\(([^)]+)\)/;
+    function rowMatchesExtraConditions(record, extraConditions) {
+        var extras = JSON.parse(record.extras);
+        if(!extras) {
+            return false;
+        }
+
+        return extraConditions.every(function(extraCondition) {
+            var extraCondSplit = extraCondition.split("=");
+            var conditionFieldPath = extraCondSplit[0];
+            var conditionValue = extraCondSplit[1];
+
+            var values = extractValuesFromPath(extras, conditionFieldPath);
+            var $containsRegexResult = new RegExp($containsRegex, 'gi').exec(conditionValue);
+            if($containsRegexResult) {
+                var containedSearchedValue = $containsRegexResult[1].toUpperCase();
+                return values.map(function(val){ return val?(""+val).toUpperCase():val; }).indexOf(containedSearchedValue) !== -1;
+            } else {
+                return (""+values[0]).toUpperCase() == conditionValue.toUpperCase();
+            }
+        });
+    }
+
     return {
         all: function(params, success, error) {
             var whereConditions = {};
@@ -27,8 +82,11 @@ var Location = (function() {
                 order: 'recorded_at DESC'
             }).then(function(rows) {
                 var locations = [];
+
                 rows.forEach(function (row) {
-                    locations.push(hydrate(row));
+                    if(!params.extras || rowMatchesExtraConditions(row, params.extras.split(","))) {
+                        locations.push(hydrate(row));
+                    }
                 });
                 success(locations);
             }, function(err){
